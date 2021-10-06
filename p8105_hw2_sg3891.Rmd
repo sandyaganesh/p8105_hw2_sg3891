@@ -1,0 +1,8 @@
+---
+title: "p8105_hw2_sg3891"
+author: Sandya Ganesh
+date: 2021-10-06
+output: github_document
+---
+
+## Question 1
