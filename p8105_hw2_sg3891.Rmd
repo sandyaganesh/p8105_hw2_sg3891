@@ -11,15 +11,38 @@ library(readxl)
 ```
 ## Question 1
 
-#### Import data
+#### Read and clean the Mr. Trash Wheel sheet
 
 ```{r trash}
-trashwheel_df = read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 
-     sheet = 1, range = "A2:N534")
-
-trashwheel_df = janitor::clean_names(trashwheel_df)
-
-trashwheel_df = drop_na(trashwheel_df, dumpster)
-trashwheel_df = round(trashwheel_df$sports_balls, 0)
-
+trashwheel_df = 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 1, range = "A2:N534") %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(
+    sports_balls = round(sports_balls, 0))
 ```
+
+#### Read and clean the precipitation data for 2019 and 2018
+```{r precipitation}
+p2019_df = 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 6, range = "A2:B14") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = 2019)
+
+p2018_df = 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 7, range = "A2:B14") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = 2018)
+
+pcombined_df =
+  bind_rows(p2019_df, p2018_df) %>%
+  mutate(month = month.name[month])
+```
+
+#### Description of Data
+The number of observations in the Mr. Trash Wheel sheet is `r nrow(trashwheel_df)` observations and the data set also contains `r ncol(trashwheel_df)` columns/variables. Some key variables in this data set include `r names(trashwheel_df %>% select(c(1, 3, 5)))`. The dumpsters are numbered from `r  min(pull(trashwheel_df, dumpster))` to `r  max(pull(trashwheel_df, dumpster))`. Additionally, this data is collected from `r  min(pull(trashwheel_df, year))` to `r  max (pull(trashwheel_df, year))`. The total weight of the trash in the data set is `r  sum(pull(trashwheel_df, weight_tons))` tons. The median number of sports balls in a dumpster in 2019 is `r median(pull(filter(trashwheel_df, year == 2019), sports_balls))` balls.
+
+The total number of observations in the precipitation data set is `r nrow(pcombined_df)` observations and the dataset also includes `r ncol(pcombined_df)` columns/variables. Some key variables in this data set include `r names(trashwheel_df %>% select(c(1, 2, 3)))`. Average total rainfall in 2018 is `r mean(pull(filter(pcombined_df, year == 2018), total))` inches and `r sum(pull(filter(pcombined_df, year == 2019), total))` inches in 2019. The total precipitation is 2018 was `r sum(pull(filter(pcombined_df, year == 2018), total))` inches and the total precipitation in 2019 was `r sum(pull(filter(pcombined_df, year == 2019), total))` inches.
+
