@@ -14,6 +14,8 @@ library(readxl)
 
 #### Read and clean the Mr. Trash Wheel sheet
 
+We will read the relevant excel sheet and omit non-data entries and rows that do not include dumpster-specific data. Additionally, we will round the number of sports balls to the nearest integer.
+
 ```{r trash}
 trashwheel_df = 
   read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 1, range = "A2:N534") %>% 
@@ -21,10 +23,12 @@ trashwheel_df =
   drop_na(dumpster) %>% 
   mutate(
     sports_balls = round(sports_balls, 0))
-
 ```
 
 #### Read and clean the precipitation data for 2019 and 2018
+
+Next, we will read and clean precipitation data for 2018 and 2019. it rows without precipitation data and add a variable for year. Next, combine precipitation data sets and convert month to a character variable (the variable month.name is built into R and should be useful).
+
 ```{r precipitation}
 p2019_df = 
   read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 
@@ -43,7 +47,6 @@ p2018_df =
 pcombined_df =
   bind_rows(p2019_df, p2018_df) %>%
   mutate(month = month.name[month])
-
 ```
 
 #### Description of Data
@@ -99,7 +102,7 @@ unemp_df =
   pivot_longer(
     c(jan:dec),
     names_to = "month", 
-    values_to = "unemployment") %>% 
+    values_to = "unemployment") %>%
   mutate(
     year = as.integer(year),
     month = recode(month, "jan" = "January", "feb" = "February", "mar" = "March", "apr" = "April", "may" = "May", "jun" = "June", "jul" = "July", "aug" = "August", "sept" = "September", "oct" = "October", "nov" = "November", "dec" = "December")) %>% 
@@ -134,9 +137,10 @@ child_names_df =
   janitor::clean_names() %>% 
   mutate(
     childs_first_name = str_to_title(childs_first_name),
-  "ASIAN AND PACI" = "ASIAN AND PACIFIC ISLANDER",
-  "BLACK NON HISP" = "BLACK NON HISPANIC", 
-  "WHITE NON HISP" = "WHITE NON HISPANIC") %>%
+    ethnicity = recode(ethnicity,
+    "ASIAN AND PACI" = "ASIAN AND PACIFIC ISLANDER",
+    "BLACK NON HISP" = "BLACK NON HISPANIC", 
+    "WHITE NON HISP" = "WHITE NON HISPANIC")) %>%
   distinct()
 ```
 
@@ -171,5 +175,22 @@ male_df =
       values_from = "childs_first_name")
 
 knitr::kable(male_df)
+
+```
+
+#### Scatter plot 
+Produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis), for male, white, non hispanic children born
+in 2016.
+
+```{r scatter, message = FALSE}
+scatter_df = 
+  filter(
+    child_names_df,
+    gender == "MALE",
+    ethnicity == "WHITE NON HISPANIC",
+    year_of_birth == 2016)
+
+
+ggplot(scatter_df, aes(x = rank, y = count)) + geom_point()
 ```
 
