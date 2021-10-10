@@ -8,7 +8,6 @@ output: github_document
 ```{r setup, echo = FALSE, message = FALSE}
 library(tidyverse)
 library(readxl)
-
 ```
 ## Question 1
 
@@ -109,7 +108,9 @@ unemp_df =
     values_to = "unemployment") %>%
   mutate(
     year = as.integer(year),
-    month = recode(month, "jan" = "January", "feb" = "February", "mar" = "March", "apr" = "April", "may" = "May", "jun" = "June", "jul" = "July", "aug" = "August", "sep" = "September", "oct" = "October", "nov" = "November", "dec" = "December")) %>% 
+    month = recode(month, "jan" = "January", "feb" = "February", "mar" = "March", "apr" = "April",
+                   "may" = "May", "jun" = "June", "jul" = "July", "aug" = "August", "sep" = 
+                    "September", "oct" = "October", "nov" = "November", "dec" = "December")) %>% 
   arrange(year, month)
 
 ```
@@ -128,7 +129,7 @@ The snp_df dataset contains `r nrow(snp_df)` observations of `r ncol(snp_df)` va
 
 The unemp_df dataset contains `r nrow(unemp_df)` observations of `r ncol(unemp_df)` variables. It includes the variables `r names(unemp_df)`, and provides the percentage of unemployment in each month of the associated year.
 
-The merged dataset, called p2_final_df, contains `r nrow(p2_final_df)` observations of `r ncol(p2_final_df)` variables. The range of years is from `r  min(pull(p2_final_df, year))` to `r  max(pull(p2_final_df, year))`. The names of key variables include `r names(p2_final_df %>% select(c(1, 9, 10, 11)))`. From these key variables, we are able to identify the year and presidential party for each observation. Additionally, the "close" variable indicates the closing values of the S&P stock index on the associated month and year, and the unemployment variable indicates the percentage of unemployment in the given month and year.
+The merged data set, called p2_final_df, contains `r nrow(p2_final_df)` observations of `r ncol(p2_final_df)` variables. The range of years is from `r  min(pull(p2_final_df, year))` to `r  max(pull(p2_final_df, year))`. The names of key variables include `r names(p2_final_df %>% select(c(1, 9, 10, 11)))`. From these key variables, we are able to identify the year and presidential party for each observation. Additionally, the "close" variable indicates the closing values of the S&P stock index on the associated month and year, and the unemployment variable indicates the percentage of unemployment in the given month and year.
 
 ## Question 3
 
@@ -168,7 +169,7 @@ knitr::kable(olivia_df)
 
 The code chunk below produces a well-structured, reader-friendly table showing the rank in popularity of the most popular name as a male baby name over time.
 
-```{r mmale, message = FALSE}
+```{r male, message = FALSE}
 male_df = 
   filter(
     child_names_df, gender == "MALE" & rank == 1) %>% 
